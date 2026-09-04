@@ -1,5 +1,6 @@
-from ledger import CreditLedger
+from ledger import CreditLedger, InvalidCreditError
 import threading
+import pytest
 
 def test_applies_credit_once(ledger):
     result = ledger.apply_credit("evt-1", "acc-1", 1000)
@@ -68,3 +69,14 @@ def test_duplicate_event_is_applied_only_once_concurrently(database_path):
 
     assert sorted(result.applied for result in results) == [False, True]
     assert ledger1.balance("account-1") == 100
+
+def test_invalid_event_can_be_reused(database_path):
+    ledger = CreditLedger(database_path)
+
+    with pytest.raises(InvalidCreditError):
+        ledger.apply_credit("event-reuse", "account-1", -100)
+
+    result = ledger.apply_credit("event-reuse", "account-1", 100)
+
+    assert result.applied is True
+    assert result.balance_cents == 100
