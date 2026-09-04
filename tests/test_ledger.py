@@ -45,9 +45,9 @@ def test_duplicate_event_is_ignored_after_restart(database_path):
 def test_unknown_account_has_zero_balance(ledger):
     assert ledger.balance("acc-inexistente") == 0
 
-def test_duplicate_event_is_applied_only_once_concurrently(db_path):
-    ledger1 = CreditLedger(db_path)
-    ledger2 = CreditLedger(db_path)
+def test_duplicate_event_is_applied_only_once_concurrently(database_path):
+    ledger1 = CreditLedger(database_path)
+    ledger2 = CreditLedger(database_path)
 
     barrier = threading.Barrier(2)
     results = []
