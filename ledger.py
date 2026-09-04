@@ -37,7 +37,6 @@ class CreditResult:
 class CreditLedger:
     def __init__(self, database_path: str):
         self._database_path = database_path
-        #self._processed_event_ids: set[str] = set() # Falha em 2, 3 e 4
         with self._transaction() as conn:
             conn.executescript(SCHEMA)
 
@@ -57,9 +56,6 @@ class CreditLedger:
         amount_cents: int,
     ) -> CreditResult:
         ### 1. Validação
-        #if event_id in self._processed_event_ids: # Evento ja registrado
-        #    return CreditResult(applied=False, balance_cents=self.balance(account_id))
-
         if not event_id:
             raise InvalidCreditError("event_id não pode ser vazio")
 
@@ -108,8 +104,6 @@ class CreditLedger:
 
             balance_cents = row[0]
 
-        #self._processed_event_ids.add(event_id)
-        #################################
         return CreditResult(applied=applied, balance_cents=balance_cents)
 
     def balance(self, account_id: str) -> int:
